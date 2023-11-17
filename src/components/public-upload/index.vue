@@ -18,7 +18,7 @@
           下载模板并完善信息后，可将文件拖拽到此处导入
         </div>
         <div class="upload-desc">
-          文件支持xlsx、xls导入格式，最大可导入10M文件
+          文件支持xlsx、xls导入格式，最大可导入{{ maxSize }}M文件
         </div>
       </div>
     </el-upload>
@@ -34,6 +34,10 @@ export default {
       type: Object,
       default: () => {},
     },
+    maxSize: {
+      type: Number,
+      default: 10,
+    },
   },
   data() {
     return {};
@@ -44,9 +48,14 @@ export default {
     readExcel(file) {
       const types = file.name.slice(file.name.lastIndexOf("."));
       const fileType = [".xlsx", ".xls"].some((item) => item === types);
+      const maxSize = this.maxSize * 1024 * 1000;
       //  校验格式
       if (!fileType) {
         this.$message("格式错误！请重新上传");
+        return;
+      }
+      if (file.size > maxSize) {
+        this.$message("文件过大！请重新上传");
         return;
       }
       // 返回workbook
